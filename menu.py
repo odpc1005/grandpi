@@ -78,13 +78,21 @@ def get_joystick():
     if GPIO.input(esc) == False:
         print("get joystick esc")
         j= 's'
-        
+    if j != '':
+        sleep(0.3)
     return j    
+
+def say_title():
+    subprocess.call("mpc pause", shell=True)
+    subprocess.call("mpc current | espeak -v es -s 100 -k 30 --stdout | aplay", shell=True)
+    subprocess.call("mpc play", shell=True)
+    return True
+
 
 if __name__ == '__main__':   
     #initial setup before the loop.
     while True:
-        sleep(0.2)
+        sleep(0.1)
         j = get_joystick()
         
         if j == 'b':
@@ -102,13 +110,14 @@ if __name__ == '__main__':
             subprocess.call("mpc volume -2",shell=True)
         if j == 'r':
             subprocess.call("mpc next",shell=True)
+            say_title()
         if j == 'l':
             subprocess.call("mpc prev",shell=True)
-        
+            say_title()
         if j == 'e':
             #this is enter
             subprocess.call("mpc clear", shell=True)
-            subprocess.call("mpc ls | grep 'documentaries' | sort | mpc add", shell=True)
+            subprocess.call("mpc ls documentaries/01\ Japon | sort | mpc add", shell=True)
             subprocess.call("mpc update --wait",shell=True)
         if j == 's':
             #this is esc
@@ -116,5 +125,6 @@ if __name__ == '__main__':
             subprocess.call("mpc ls | grep 'songs' | sort | mpc add", shell=True)
             subprocess.call("mpc update --wait",shell=True)
             
+        key = 'n'
         navigate_menu(key)
         execute_menu
